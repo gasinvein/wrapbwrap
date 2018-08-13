@@ -17,7 +17,7 @@ bwrap_args = [
     '--proc', '/proc',
     '--dev-bind', '/dev', '/dev',
     '--bind', '/tmp/.X11-unix', '/tmp/.X11-unix',
-    '--bind', os.environ['XAUTHORITY'], os.environ['XAUTHORITY'],
+    '--ro-bind', os.environ['XAUTHORITY'], os.environ['XAUTHORITY'],
     '--bind', os.path.join(os.environ['XDG_RUNTIME_DIR'], 'pulse', 'native'), os.path.join(os.environ['XDG_RUNTIME_DIR'], 'pulse', 'native'),
     '--tmpfs', '/var',
     '--symlink', '../run', '/var/run',
@@ -66,6 +66,7 @@ if __name__ == '__main__':
         ]
 
     cwd = os.getcwd()
+
     if is_kinda_safe_path(cwd):
         bwrap_args += ['--bind', cwd, cwd]
     else:
