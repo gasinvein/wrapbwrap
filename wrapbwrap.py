@@ -64,10 +64,6 @@ class BWrapper(object):
     def add_symlink(self, target, name):
         self._args += ['--symlink', target, name]
 
-    def add_dev(self, devpath):
-        d = os.path.join('/dev', devpath)
-        self._args += ['--dev-bind', d, d]
-
     def get_bwrap_cmdline(self, cmdline, workdir=None):
         if workdir is None:
             workdir = os.getcwd()
@@ -113,7 +109,7 @@ if __name__ == '__main__':
             wrapper.add_mount(h, dev=True)
 
     if args.gpu:
-        wrapper.add_dev('dri')
+        wrapper.add_mount('/dev/dri', dev=True)
         for n in glob.glob('/dev/nvidia*'):
             wrapper.add_mount(n, dev=True)
 
