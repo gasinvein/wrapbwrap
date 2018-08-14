@@ -23,7 +23,7 @@ class BWrapper(object):
     Object handling arguments for bwrap instance to be executed
     """
     _bwrap = 'bwrap'
-    _args = [
+    _default_args = [
         '--unshare-pid',
         '--unshare-user-try',
         '--ro-bind', '/usr', '/usr',
@@ -40,6 +40,7 @@ class BWrapper(object):
     ]
 
     def __init__(self, add_essentials=True):
+        self._args = self._default_args.copy()
         if add_essentials:
             self.add_mount('/tmp/.X11-unix')
             self.add_mount(os.environ['XAUTHORITY'], False)
@@ -78,6 +79,7 @@ class BWrapper(object):
         c = self.get_bwrap_cmdline(cmdline, workdir)
         # TODO pass stadin to subprocess, don't let python handle it for itself
         return subprocess.run(c, shell=False, stdin=stdin)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run command in bwrap sandbox')
