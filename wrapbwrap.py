@@ -30,6 +30,7 @@ class BWrapper(object):
         '--symlink', 'usr/lib', '/lib',
         '--symlink', 'usr/lib64', '/lib64',
         '--symlink', 'usr/bin', '/bin',
+        '--symlink', 'usr/sbin', '/sbin',
         # TODO replace with something secure
         '--ro-bind', '/etc', '/etc',
         '--proc', '/proc',
@@ -82,6 +83,7 @@ if __name__ == '__main__':
     parser.add_argument('-m', '--mount', action='append', type=str, help='Mount directory')
     parser.add_argument('--system-bus', action='store_true', help='Allow D-Bus system bus access (warning: insecure)')
     parser.add_argument('--session-bus', action='store_true', help='Allow D-Bus session bus access (warning: insecure)')
+    parser.add_argument('-n', '--no-network', dest='network', action='store_false', help='Disallow network')
     parser.add_argument('-i', '--input', action='store_true', help='Allow access to input devices')
     parser.add_argument('--no-gpu', dest='gpu', action='store_false', help='Disallow access to GPU')
     parser.add_argument('cmd', type=str, nargs='+', help='Command to run')
@@ -95,6 +97,13 @@ if __name__ == '__main__':
     if args.mount:
         for m in args.mount:
             wrapper.add_mount(os.path.abspath(m))
+
+    if args.network:
+        rc = '/etc/resolv.conf'
+        if os.path.islink(rc):
+            wrapper.add_mount(os.path.realpath(rc))
+    else:
+        wrapper._args.append('--unshare-net')
 
     if args.system_bus:
         wrapper.add_mount('/run/dbus/system_bus_socket')
