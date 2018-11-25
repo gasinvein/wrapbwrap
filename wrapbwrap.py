@@ -114,7 +114,7 @@ if __name__ == '__main__':
     if args.input:
         wrapper.add_mount('/dev/uinput', dev=True)
         wrapper.add_mount('/dev/input', dev=True)
-        for h in glob.glob('/dev/hidraw*', dev=True):
+        for h in glob.glob('/dev/hidraw*'):
             wrapper.add_mount(h, dev=True)
 
     if args.gpu:
