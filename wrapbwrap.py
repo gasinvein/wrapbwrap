@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import subprocess
 import os
 import sys
 import argparse
@@ -70,12 +69,9 @@ class BWrapper(object):
             workdir = os.getcwd()
         return [self._bwrap] + self._args + ['--chdir', workdir] + ['--'] + cmdline
 
-    def run(self, cmdline, workdir=None, stdin=None):
-        if stdin is None:
-            stdin = sys.stdin
+    def run(self, cmdline, workdir=None):
         c = self.get_bwrap_cmdline(cmdline, workdir)
-        # TODO pass stadin to subprocess, don't let python handle it for itself
-        return subprocess.run(c, shell=False, stdin=stdin)
+        os.execvpe(c[0], c, os.environ)
 
 
 if __name__ == '__main__':
@@ -132,5 +128,4 @@ if __name__ == '__main__':
 
     # TODO if command is a file and it's not inside cwd, mount it
 
-    proc = wrapper.run(args.cmd, workdir=cwd)
-    sys.exit(proc.returncode)
+    wrapper.run(args.cmd, workdir=cwd)
