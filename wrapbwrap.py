@@ -64,6 +64,9 @@ class BWrapper(object):
     def add_symlink(self, target, name):
         self._args += ['--symlink', target, name]
 
+    def add_env(self, var, val):
+        self._args += ['--setenv', var, val]
+
     def get_bwrap_cmdline(self, cmdline, workdir=None):
         if workdir is None:
             workdir = os.getcwd()
@@ -82,6 +85,7 @@ if __name__ == '__main__':
     parser.add_argument('-n', '--no-network', dest='network', action='store_false', help='Disallow network')
     parser.add_argument('-i', '--input', action='store_true', help='Allow access to input devices')
     parser.add_argument('--no-gpu', dest='gpu', action='store_false', help='Disallow access to GPU')
+    parser.add_argument('-e', '--env', dest='env', action='append', help='Add environment variable')
     parser.add_argument('cmd', type=str, nargs='+', help='Command to run')
     args = parser.parse_args()
 
@@ -117,6 +121,11 @@ if __name__ == '__main__':
         wrapper.add_mount('/dev/dri', dev=True)
         for n in glob.glob('/dev/nvidia*'):
             wrapper.add_mount(n, dev=True)
+
+    if len(args.env) > 0:
+        for e in args.env:
+            var, val = e.split('=')
+            wrapper.add_env(var, val)
 
     cwd = os.getcwd()
 
