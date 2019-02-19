@@ -122,7 +122,7 @@ if __name__ == '__main__':
         for n in glob.glob('/dev/nvidia*'):
             wrapper.add_mount(n, dev=True)
 
-    if len(args.env) > 0:
+    if args.env is not None:
         for e in args.env:
             var, val = e.split('=')
             wrapper.add_env(var, val)
