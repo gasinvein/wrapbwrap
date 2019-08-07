@@ -42,10 +42,16 @@ class BWrapper(object):
     def __init__(self, add_essentials=True):
         self._args = self._default_args.copy()
         if add_essentials:
-            self.add_mount('/tmp/.X11-unix')
-            self.add_mount(os.environ['XAUTHORITY'], False)
-            self.add_mount(os.path.join(os.environ['XDG_RUNTIME_DIR'], 'pulse', 'native'))
+            self._add_desktop()
             self.add_dir(os.environ['HOME'])
+
+    def _add_desktop(self):
+        self.add_mount('/tmp/.X11-unix')
+        if 'XAUTHORITY' in os.environ:
+            self.add_mount(os.environ['XAUTHORITY'], False)
+        for w in glob.glob(os.path.join(os.environ['XDG_RUNTIME_DIR'], 'wayland-*')):
+            self.add_mount(w, True)
+        self.add_mount(os.path.join(os.environ['XDG_RUNTIME_DIR'], 'pulse', 'native'))
 
     def add_mount(self, path, writable=True, dev=False):
         if dev:
